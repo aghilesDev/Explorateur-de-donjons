@@ -1,12 +1,3 @@
-/**
- * Initializes the game and sets up the map and UI.
- *
- * @param {function} onPlayerUpdated - The callback function to be called when the player updates.
- * @param {function} onTileUpdated - The callback function to be called when a tile updates.
- * @param {number} mapWidth - The width of the game map.
- * @param {number} mapHeight - The height of the game map.
- * @returns {void}
- */
 import * as mainModule from "./main.js";
 const mapElement = document.getElementById('map');
 let progressBar = document.querySelector('.progress-bar');
