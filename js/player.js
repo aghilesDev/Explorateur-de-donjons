@@ -1,110 +1,177 @@
-//variables
+/**
+ * The Player module defines the player object and its properties and functions.
+ * @module Player
+ */
 
 export let player = {
-    get_position_x,
-    get_position_y,
-    is_energy_points_zero,
-    update_score,
-    move_to,
-    move_to_left,
-    move_to_right,
-    move_to_up,
-    move_to_down,
-    add_listner,
-    position_x : 0,
-    position_y : 0,
-    MAX_ENERGY_POINTS:40,
-    energy_points : 40,
-    score : 0
-}
+    getPositionX,
+    getPositionY,
+    isEnergyPointsZero,
+    updateScore,
+    moveTo,
+    moveToLeft,
+    moveToRight,
+    moveToUp,
+    moveToDown,
+    addListener,
+    positionX: 0,
+    positionY: 0,
+    MAX_ENERGY_POINTS: 40,
+    energyPoints: 40,
+    score: 0
+};
 
-let player_listners = []
+let playerListeners = [];
 
-function add_listner(listner){
-    if(listner !== null){
-        player_listners.push(listner);
+/**
+ * Adds a new player listener.
+ * @param {function} listener - The listener function.
+ */
+function addListener(listener) {
+    if (listener !== null) {
+        playerListeners.push(listener);
     }
 }
 
-function notify_player_listner(){
-    for( let i=0; i <player_listners.length; i++){
-        let listner = player_listners[i];
-        listner(player);
+/**
+ * Notifies all player listeners.
+ */
+function notifyPlayerListeners() {
+    for (let i = 0; i < playerListeners.length; i++) {
+        let listener = playerListeners[i];
+        listener(player);
     }
 }
 
-// getters
-function get_position_x() {
-    return player.position_x;
+/**
+ * Gets the player's X position.
+ * @return {number} - The player's X position.
+ */
+function getPositionX() {
+    return player.positionX;
 }
 
-function get_position_y() {
-    return player.position_y;
+/**
+ * Gets the player's Y position.
+ * @return {number} - The player's Y position.
+ */
+function getPositionY() {
+    return player.positionY;
 }
 
-function get_energy_points() {
-    return player.energy_points;
+/**
+ * Gets the player's energy points.
+ * @return {number} - The player's energy points.
+ */
+function getEnergyPoints() {
+    return player.energyPoints;
 }
 
-function is_energy_points_zero() {
-    return player.energy_points === 0;
+/**
+ * Determines if the player's energy points are zero.
+ * @return {boolean} - True if the player's energy points are zero, false otherwise.
+ */
+function isEnergyPointsZero() {
+    return player.energyPoints === 0;
 }
 
-// score setter
-function update_score(score){
+/**
+ * Updates the player's score by adding a given value.
+ * @param {number} score - The value to add to the player's score.
+ */
+function updateScore(score) {
     player.score += score;
-    notify_player_listner();
+    notifyPlayerListeners();
 }
 
-// moving function
-function move_to_left(energy_points_cost){
-    
-    let is_moved = move_to(player.position_x - 1 ,player.position_y, energy_points_cost);
-
-    return is_moved;
-}
-
-function move_to_right(energy_points_cost){
-    let is_moved = move_to(player.position_x + 1 ,player.position_y, energy_points_cost);
-
-    return is_moved
-}
-
-function move_to_down(energy_points_cost){
-    let is_moved = move_to(player.position_x ,player.position_y + 1, energy_points_cost);
-    return is_moved
-}
-
-function move_to_up(energy_points_cost){
-    let is_moved = move_to(player.position_x,player.position_y - 1 , energy_points_cost);
-
-    return is_moved
-}
-
-
-
-function move_to(position_x,position_y, energy_points_cost){
-    if(energy_points_cost > player.energy_points) {
+/**
+ * Moves the player to a given position and updates their energy points.
+ * @param {number} positionX - The X position to move the player to.
+ * @param {number} positionY - The Y position to move the player to.
+ * @param {number} energyPointsCost - The energy points cost of the move.
+ * @return {boolean} - True if the player was moved, false otherwise.
+ */
+function moveTo(positionX, positionY, energyPointsCost) {
+    if (energyPointsCost > player.energyPoints) {
         return false;
     }
-    player.energy_points -= energy_points_cost;
-    player.position_x = position_x;
-    player.position_y = position_y;
-    notify_player_listner();
+    player.energyPoints -= energyPointsCost;
+    player.positionX = positionX;
+    player.positionY = positionY;
+    notifyPlayerListeners();
     return true;
 }
 
+/**
+ * Moves the player to the left.
+ * @param {number} energyPointsCost - The energy points cost of the move.
+ * @return {boolean} - True if the player was moved, false otherwise.
+ */
+function moveToLeft(energyPointsCost) {
+    let isMoved = moveTo(player.positionX - 1, player.positionY, energyPointsCost);
+    return isMoved;
+}
+
+/**
+ * Moves the player one tile to the right on the game board.
+ * @param {number} energyPointsCost - The amount of energy points required to make the move.
+ * @returns {boolean} - Returns true if the move is successful, false otherwise.
+ */
+function moveToRight(energyPointsCost){
+    let isMoved = movePlayerTo(player.positionX + 1, player.positionY, energyPointsCost);
+    return isMoved;
+}
+
+/**
+ * Moves the player one tile down on the game board.
+ * @param {number} energyPointsCost - The amount of energy points required to make the move.
+ * @returns {boolean} - Returns true if the move is successful, false otherwise.
+ */
+function moveToDown(energyPointsCost){
+    let isMoved = movePlayerTo(player.positionX, player.positionY + 1, energyPointsCost);
+    return isMoved;
+}
+
+/**
+ * Moves the player one tile up on the game board.
+ * @param {number} energyPointsCost - The amount of energy points required to make the move.
+ * @returns {boolean} - Returns true if the move is successful, false otherwise.
+ */
+function moveToUp(energyPointsCost){
+    let isMoved = movePlayerTo(player.positionX, player.positionY - 1, energyPointsCost);
+    return isMoved;
+}
+
+/**
+ * Moves the player to a specific tile on the game board.
+ * @param {number} positionX - The x coordinate of the tile to move to.
+ * @param {number} positionY - The y coordinate of the tile to move to.
+ * @param {number} energyPointsCost - The amount of energy points required to make the move.
+ * @returns {boolean} - Returns true if the move is successful, false otherwise.
+ */
+/*
+function movePlayerTo(positionX, positionY, energyPointsCost) {
+    if (energyPointsCost > player.energyPoints) {
+        return false;
+    }
+    player.energyPoints -= energyPointsCost;
+    player.positionX = positionX;
+    player.positionY = positionY;
+    notifyPlayerListener();
+    return true;
+}
+*/
+
 export default {
     player,
-    get_position_x,
-    get_position_y,
-    get_energy_points,
-    is_energy_points_zero,
-    update_score,
-    move_to,
-    move_to_left,
-    move_to_right,
-    move_to_up,
-    move_to_down,
-    add_listner,
+    getPositionX,
+    getPositionY,
+    getEnergyPoints,
+    isEnergyPointsZero,
+    updateScore,
+    moveTo,
+    moveToRight,
+    moveToUp,
+    moveToDown,
+    addListener,
 };

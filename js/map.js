@@ -1,168 +1,249 @@
+// This object defines the different types of tiles in the game map
 let TILE_TYPE = {
     NORMAL: {
-        id:0,
-        score: -10
+      id: 0,
+      score: -10,
     },
-    TREASURE:{
-        id:1,
-        score: 1000
+    TREASURE: {
+      id: 1,
+      score: 1000,
     },
-    TRAP:{
-        id:2,
-        score: -50
+    TRAP: {
+      id: 2,
+      score: -50,
+    },
+  };
+  
+  // This object defines the different directions that a player can move in
+  let MOVEMENT_DIRECTION = {
+    LEFT: 0,
+    UP: 1,
+    RIGHT: 2,
+    DOWN: 3,
+  };
+  
+  // These variables store the maximum values for the x and y coordinates of the game map
+  let valMaxX = 0;
+  let valMaxY = 0;
+  
+  // This variable stores the game map, which is a 2D array of tiles
+  let gameMap = [[0]];
+  
+  // This array stores listeners that are interested in changes to the game tiles
+  let tileListener = [];
+  
+  /**
+   * This function adds a listener that will be notified when a tile changes
+   * @param {function} listener - The listener function to be added
+   */
+  function addTileListener(listener) {
+    if (listener !== null) {
+      tileListener.push(listener);
     }
-}
-
-let MOVEMENT_DIRECTION = {
-    LEFT:0,
-    UP:1,
-    RIGHT:2,
-    DOWN:3
-}
-
-
-// variables
-let val_max_x = 0;
-let val_max_y = 0;
-let game_map = [[0]];
-let tile_listner = []
-
-function addTileListner(listner){
-    if(listner !== null){
-        tile_listner.push(listner);
+  }
+  
+  /**
+   * This function notifies all tile listeners that a specific tile has changed
+   * @param {Object} tile - The tile that has changed
+   */
+  function notifyTileListener(tile) {
+    for (let i = 0; i < tileListener.length; i++) {
+      let listener = tileListener[i];
+      listener(tile);
     }
-}
-
-function notifyTileListner(tile){
-    for( let i=0; i <tile_listner.length; i++){
-        let listner = tile_listner[i];
-        listner(tile);
-    }
-}
-
-function getRandomInt(max) {
+  }
+  
+  /**
+   * This function generates a random integer between 0 and max (exclusive)
+   * @param {number} max - The UPper bound for the random integer
+   * @returns {number} - A random integer between 0 and max (exclusive)
+   */
+  function getRandomInt(max) {
     return Math.floor(Math.random() * max);
   }
-
-function generate_tile(position_x,position_y,tileTypeId){
+  
+  /**
+   * This function generates a tile object with the specified position and type ID
+   * @param {number} positionX - The x-coordinate of the tile's position
+   * @param {number} positionY - The y-coordinate of the tile's position
+   * @param {number} tileTypeId - The ID of the tile's type
+   * @returns {Object} - A tile object with the specified properties
+   */
+  function generateTile(positionX, positionY, tileTypeId) {
     return {
-        position_x,
-        position_y,
-        tileTypeId
+      positionX,
+      positionY,
+      tileTypeId,
     };
-}
-
-function generate_map(max_x, max_y) {
-    
-    let max_length = max_x * max_y;
-    let tile_types_to_affect = [];
-    for(let i =0; i<max_length; i++){
-        if (i < max_length/10.00){
-            tile_types_to_affect.push(TILE_TYPE.TREASURE.id);
-        } else {
-            tile_types_to_affect.push(TILE_TYPE.TRAP.id);
-        }
+  }
+  
+ /**
+ * Generates a game map with random tiles of treasure and traps
+ *
+ * @param {number} maxX - The maximum number of tiles on the X axis
+ * @param {number} maxY - The maximum number of tiles on the Y axis
+ * @returns {Array} The generated game map
+ */
+function generateMap(maxX, maxY) {
+    // Calculate the maximum length of the map
+    let maxLength = maxX * maxY;
+    // Initialize an array to store the tile types to affect
+    let tileTypesToAffect = [];
+    // Determine which tile type to use for each tile
+    for (let i = 0; i < maxLength; i++) {
+      if (i < maxLength / 10.0) {
+        tileTypesToAffect.push(TILE_TYPE.TREASURE.id);
+      } else {
+        tileTypesToAffect.push(TILE_TYPE.TRAP.id);
+      }
     }
-    let map_generated = [];
-    for(let position_x = 0; position_x < max_x; position_x++){
-        map_generated.push([]);
-        for(let position_y = 0; position_y < max_y; position_y++){
-            let index = getRandomInt(tile_types_to_affect.length);
-            let tile_type_id = tile_types_to_affect[index];
-            map_generated[position_x].push(generate_tile(position_x,position_y,tile_type_id));
-            tile_types_to_affect.splice(index,1);
-        }
+    // Initialize an array to store the generated game map
+    let mapGenerated = [];
+    // Generate tiles for each position on the game map
+    for (let positionX = 0; positionX < maxX; positionX++) {
+      mapGenerated.push([]);
+      for (let positionY = 0; positionY < maxY; positionY++) {
+        let index = getRandomInt(tileTypesToAffect.length);
+        let tileTypeId = tileTypesToAffect[index];
+        // Generate a tile for the current position
+        mapGenerated[positionX].push(
+          generateTile(positionX, positionY, tileTypeId)
+        );
+        // Remove the tile type that was used from the array of tile types
+        tileTypesToAffect.splice(index, 1);
+      }
     }
-    val_max_x = max_x;
-    val_max_y = max_y;
-    game_map = map_generated;
-    return map_generated;
-}
-
-function get_map(){
-    return game_map;
-}
-
-
-
-function is_position_valide(position_x, position_y){
-    if(position_x < 0 || position_y < 0){
-        return false;
+    // Store the dimensions of the game map
+    valMaxX = maxX;
+    valMaxY = maxY;
+    gameMap = mapGenerated;
+    // Return the generated game map
+    return mapGenerated;
+  }
+  
+  /**
+   * Returns the current game map
+   *
+   * @returns {Array} The current game map
+   */
+  function getMap() {
+    return gameMap;
+  }
+  
+  /**
+   * Determines whether a given position is valid on the game map
+   *
+   * @param {number} positionX - The X position to check
+   * @param {number} positionY - The Y position to check
+   * @returns {boolean} Whether the position is valid
+   */
+  function isPositionValid(positionX, positionY) {
+    if (positionX < 0 || positionY < 0) {
+      return false;
     }
-
-    if(position_x >= val_max_x || position_y >= val_max_y){
-        return false;
+  
+    if (positionX >= valMaxX || positionY >= valMaxY) {
+      return false;
     }
-
+  
     return true;
-}
-
-function can_move(current_position_x, current_position_y, direction) {
-    switch(direction){
-        case MOVEMENT_DIRECTION.LEFT:
-            return current_position_x > 0;
-        case MOVEMENT_DIRECTION.RIGHT:
-            return current_position_x < val_max_x-1;
-        case MOVEMENT_DIRECTION.UP:
-            return current_position_y > 0;
-        case MOVEMENT_DIRECTION.DOWN:
-            return current_position_y < val_max_y-1;
-        default:
-            break;
+  }
+  
+  /**
+   * Determines whether the player can move in a given direction from their current position
+   *
+   * @param {number} currentPositionX - The current X position of the player
+   * @param {number} currentPositionY - The current Y position of the player
+   * @param {string} direction - The direction in which the player wants to move
+   * @returns {boolean} Whether the player can move in the given direction
+   */
+  function canMove(currentPositionX, currentPositionY, direction) {
+    switch (direction) {
+      case MOVEMENT_DIRECTION.LEFT:
+        return currentPositionX > 0;
+      case MOVEMENT_DIRECTION.RIGHT:
+        return currentPositionX < valMaxX - 1;
+      case MOVEMENT_DIRECTION.UP:
+        return currentPositionY > 0;
+      case MOVEMENT_DIRECTION.DOWN:
+        return currentPositionY < valMaxY - 1;
+      default:
+        break;
     }
     return false;
-}
-
-function get_adjacent_tile(current_position_x, current_position_y, direction) {
-    switch(direction){
-        case MOVEMENT_DIRECTION.LEFT:
-            return game_map[current_position_x-1][current_position_y];
-        case MOVEMENT_DIRECTION.RIGHT:
-            return game_map[current_position_x+1][current_position_y];
-        case MOVEMENT_DIRECTION.UP:
-            return game_map[current_position_x][current_position_y-1];
-        case MOVEMENT_DIRECTION.DOWN:
-            return game_map[current_position_x][current_position_y+1];
-        default:
-            break;
+  }
+  
+/**
+ * Returns the tile adjacent to the current position in the specified direction.
+ *
+ * @param {number} currentPositionX - The current position x-coordinate.
+ * @param {number} currentPositionY - The current position y-coordinate.
+ * @param {string} direction - The direction to check for the adjacent tile.
+ * @returns {object|boolean} - The adjacent tile object or false if no tile is found.
+ */
+function getAdjacentTile(currentPositionX, currentPositionY, direction) {
+    switch (direction) {
+      case MOVEMENT_DIRECTION.LEFT:
+        return gameMap[currentPositionX - 1][currentPositionY];
+      case MOVEMENT_DIRECTION.RIGHT:
+        return gameMap[currentPositionX + 1][currentPositionY];
+      case MOVEMENT_DIRECTION.UP:
+        return gameMap[currentPositionX][currentPositionY - 1];
+      case MOVEMENT_DIRECTION.DOWN:
+        return gameMap[currentPositionX][currentPositionY + 1];
+      default:
+        break;
     }
     return false;
-}
-
-
-
-function get_tile_type(tile){
-    let tile_type_id = tile.tileTypeId;
-    for (var tile_type_key in TILE_TYPE){
-        if(TILE_TYPE[tile_type_key].id === tile_type_id){
-            return TILE_TYPE[tile_type_key];
-        }
+  }
+  
+  /**
+   * Returns the tile type object for the given tile.
+   *
+   * @param {object} tile - The tile to get the type for.
+   * @returns {object|null} - The tile type object or null if not found.
+   */
+  function getTileType(tile) {
+    let tileTypeId = tile.tileTypeId;
+    for (var tileTypeKey in TILE_TYPE) {
+      if (TILE_TYPE[tileTypeKey].id === tileTypeId) {
+        return TILE_TYPE[tileTypeKey];
+      }
     }
-    console.log("tile type id("+ tile_type_id +") not found")
+    console.log("Tile type id (" + tileTypeId + ") not found");
     return null;
-}
-
-function set_tile_type(position_x, position_y, tile_type){
-    if(!is_position_valide(position_x, position_y)){
-        console.log("tile position(x=" + position_x +", y=" +position_y + ") not valid")
-        return false;
+  }
+  
+  /**
+   * Sets the tile type at the given position to the specified type.
+   *
+   * @param {number} positionX - The x-coordinate of the tile to set.
+   * @param {number} positionY - The y-coordinate of the tile to set.
+   * @param {object} tileType - The tile type to set.
+   * @returns {boolean} - True if the tile was successfully set, false otherwise.
+   */
+  function setTileType(positionX, positionY, tileType) {
+    if (!isPositionValid(positionX, positionY)) {
+      console.log("Tile position (x=" + positionX + ", y=" + positionY + ") not valid");
+      return false;
     }
-    
-    game_map[position_x][position_y].tileTypeId = tile_type.id
-    let tile = game_map[position_x][position_y]
-    notifyTileListner(tile)
+  
+    gameMap[positionX][positionY].tileTypeId = tileType.id;
+    let tile = gameMap[positionX][positionY];
+    notifyTileListener(tile);
     return true;
-}
-
-export {
-    generate_map,
-    get_map,
-    is_position_valide,
-    can_move,
-    get_adjacent_tile,
-    get_tile_type,
-    set_tile_type,
-    addTileListner,
+  }
+  
+  export {
+    generateMap,
+    getMap,
+    isPositionValid,
+    canMove,
+    getAdjacentTile,
+    getTileType,
+    setTileType,
+    addTileListener,
     TILE_TYPE,
     MOVEMENT_DIRECTION
-};
+  };
+  
