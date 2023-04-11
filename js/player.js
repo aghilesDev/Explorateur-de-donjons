@@ -142,25 +142,7 @@ function moveToUp(energyPointsCost){
     return isMoved;
 }
 
-/**
- * Moves the player to a specific tile on the game board.
- * @param {number} positionX - The x coordinate of the tile to move to.
- * @param {number} positionY - The y coordinate of the tile to move to.
- * @param {number} energyPointsCost - The amount of energy points required to make the move.
- * @returns {boolean} - Returns true if the move is successful, false otherwise.
- */
-/*
-function movePlayerTo(positionX, positionY, energyPointsCost) {
-    if (energyPointsCost > player.energyPoints) {
-        return false;
-    }
-    player.energyPoints -= energyPointsCost;
-    player.positionX = positionX;
-    player.positionY = positionY;
-    notifyPlayerListener();
-    return true;
-}
-*/
+
 
 export default {
     player,
