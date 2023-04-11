@@ -1,0 +1,33 @@
+#map {
+    width: 500px;
+    height: 300px;
+    border: 1px solid black;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.cell{
+    border: 1px solid blue;
+    width: 18px;
+    height: 18px;
+}
+
+.trap{
+    background-color: red;
+}
+
+.treasure{
+    background-color: yellow;
+}
+
+#player {
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; 
+}
