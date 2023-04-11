@@ -57,26 +57,26 @@ function update_score(score){
 }
 
 // moving function
-function move_to_left(){
+function move_to_left(energy_points_cost){
     
-    let is_moved = move_to(player.position_x - 1 ,player.position_y,1);
+    let is_moved = move_to(player.position_x - 1 ,player.position_y, energy_points_cost);
 
     return is_moved;
 }
 
-function move_to_right(){
-    let is_moved = move_to(player.position_x + 1 ,player.position_y,1);
+function move_to_right(energy_points_cost){
+    let is_moved = move_to(player.position_x + 1 ,player.position_y, energy_points_cost);
 
     return is_moved
 }
 
-function move_to_down(){
-    let is_moved = move_to(player.position_x ,player.position_y + 1,1);
+function move_to_down(energy_points_cost){
+    let is_moved = move_to(player.position_x ,player.position_y + 1, energy_points_cost);
     return is_moved
 }
 
-function move_to_up(){
-    let is_moved = move_to(player.position_x,player.position_y - 1 ,1);
+function move_to_up(energy_points_cost){
+    let is_moved = move_to(player.position_x,player.position_y - 1 , energy_points_cost);
 
     return is_moved
 }
@@ -98,6 +98,7 @@ export default {
     player,
     get_position_x,
     get_position_y,
+    get_energy_points,
     is_energy_points_zero,
     update_score,
     move_to,
