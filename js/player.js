@@ -14,6 +14,8 @@ export let player = {
     moveToUp,
     moveToDown,
     addListener,
+    getScore,
+    reset,
     positionX: 0,
     positionY: 0,
     MAX_ENERGY_POINTS: 40,
@@ -65,6 +67,14 @@ function getPositionY() {
  */
 function getEnergyPoints() {
     return player.energyPoints;
+}
+
+/**
+ * Gets the player's score.
+ * @return {number} - The player's score.
+ */
+function getScore() {
+    return player.score;
 }
 
 /**
@@ -142,6 +152,13 @@ function moveToUp(energyPointsCost){
     return isMoved;
 }
 
+function reset(){
+    player.energyPoints = player.MAX_ENERGY_POINTS
+    player.score = 0
+    notifyPlayerListeners();
+
+}
+
 
 
 export default {
@@ -156,4 +173,6 @@ export default {
     moveToUp,
     moveToDown,
     addListener,
+    getScore,
+    reset
 };

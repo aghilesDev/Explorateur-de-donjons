@@ -3,11 +3,12 @@ const mapElement = document.getElementById('map');
 let progressBar = document.querySelector('.progress-bar');
 let progressBarLabel = document.getElementById('progress-bar-label');
 let scoreLabel = document.getElementById('score-value');
+const buttonRetry = document.getElementById('button-retry');
 
 let mapWidth = 25;
 let mapHeight = 15;
 
-
+let gameScore = 0;
 
 /**
  * Updates the progress bar based on the current energy and maximum energy.
@@ -30,6 +31,7 @@ function updateProgressBar(currentEnergy, maxEnergy) {
  * @returns {void}
  */
 function updateScore(score) {
+    gameScore = score;
     scoreLabel.innerHTML = '' + score;
 }
 
@@ -42,16 +44,19 @@ function updateScore(score) {
 function onPlayerUpdated(player) {
     updateProgressBar(player.energyPoints, player.MAX_ENERGY_POINTS);
     updateScore(player.score);
+    setPlayerPositionMap(player.positionX,player.positionY)
+    if (player.isEnergyPointsZero()) {
+        console.log("Game Over")
+    }
+}
+
+function setPlayerPositionMap(positionX, positionY){
     let playerElement = document.getElementById('player');
     if (playerElement === null) {
         return;
     }
-    playerElement.style.left = player.positionX * 40 + 'px';
-    playerElement.style.top = player.positionY * 40 + 'px';
-    console.log("Score: " + player.score + " Energy: " + player.energyPoints)
-    if (player.isEnergyPointsZero()) {
-        console.log("Game Over")
-    }
+    playerElement.style.left = positionX * 40 + 'px';
+    playerElement.style.top = positionY * 40 + 'px';
 }
 
 /**
@@ -90,6 +95,7 @@ function generateMap() {
     let playerElement = document.createElement('div');
     playerElement.id = 'player';
     mapElement.appendChild(playerElement);
+    setPlayerPositionMap(mainModule.player.positionX, mainModule.player.positionY)
 
     // Loop through the map cells and create elements for each one
     for (let x = 0; x < mapWidth; x++) {
@@ -131,7 +137,31 @@ function generateTileViewId(tile) {
     return "tile-positionX-" + tile.positionX + "-positionY-" + tile.positionY;
 }
 
-mainModule.initialize(onPlayerUpdated, onTileUpdated, mapWidth, mapHeight);
+/**
+ * The callback function to be called when the game is over.
+ *
+ * @param {number} score - The score.
+ * @returns {void}
+ */
+function onGameOver(score){
+    console.log(score);
+    
+    let pop_up_score= document.getElementById("popp-up-score");
+    pop_up_score.innerHTML= '' + score;
+    let pop_up= document.getElementById("game-over-poppup");
+    pop_up.style.display = "flex";
+}
+
+
+function onResetGame(){
+    mainModule.resetGame(mapWidth, mapHeight);
+    let pop_up= document.getElementById("game-over-poppup");
+    gameMap = mainModule.getMap();
+    generateMap();
+    pop_up.style.display = "none";
+}
+
+mainModule.initialize(onPlayerUpdated, onTileUpdated,onGameOver, mapWidth, mapHeight);
 let gameMap = mainModule.getMap();
 generateMap();
 // Add an event listener for keyboard input
@@ -148,5 +178,10 @@ document.addEventListener("keydown", function(event) {
     } else if (event.code === "ArrowDown") {
         // Move player down
         mainModule.movePlayer(mainModule.MOVEMENT_DIRECTION.DOWN);
+    }else if (event.code === "Space") {
+        // Move player down
+        onGameOver(gameScore);
     }
 });
+
+buttonRetry.addEventListener('click', ()=>{onResetGame()})

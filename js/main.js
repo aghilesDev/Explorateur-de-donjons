@@ -2,10 +2,10 @@ import * as mapModule from "./map.js";
 import player from "./player.js";
 
 /**
- * The map of the game
- * @type {Array}
+ * The map of the game, which is a 2D array of tiles
  */
 let gameMap = [];
+let notifyGameOverListner = (data)=>{}
 
 /**
  * Initialize the game
@@ -14,15 +14,53 @@ let gameMap = [];
  * @param {number} mapWidth - The width of the map
  * @param {number} mapHeight - The height of the map
  */
-function initialize(playerListener, tileListener, mapWidth, mapHeight) {
+function initialize(playerListener, tileListener, gameOverListner, mapWidth, mapHeight) {
   gameMap = mapModule.generateMap(mapWidth, mapHeight);
   mapModule.addTileListener(tileListener);
   player.addListener(playerListener);
+  notifyGameOverListner = gameOverListner
   // Place player on the starting tile
-  player.moveTo(0, 0, 0);
+  setPlayerDefaultPosition(mapWidth, mapHeight)
   let positionX = player.getPositionX();
   let positionY = player.getPositionY();
   mapModule.setTileType(positionX, positionY, mapModule.TILE_TYPE.NORMAL);
+}
+
+/**
+ * Reset all the parameters of the game
+ * @param {number} mapWidth - The width of the map
+ * @param {number} mapHeight - The height of the map
+ */
+function resetGame(mapWidth, mapHeight){
+  player.reset();
+  gameMap = mapModule.generateMap(mapWidth, mapHeight);
+  setPlayerDefaultPosition(mapWidth, mapHeight)
+  let positionX = player.getPositionX();
+  let positionY = player.getPositionY();
+  mapModule.setTileType(positionX, positionY, mapModule.TILE_TYPE.NORMAL);
+}
+
+/**
+ * Move the player to the middle of the map withoud energy consumption
+ * @param {number} mapWidth - The width of the map
+ * @param {number} mapHeight - The height of the map
+ */
+function setPlayerDefaultPosition(mapWidth, mapHeight){
+  let positionX = getMiddlePosition(mapWidth);
+  let positionY = getMiddlePosition(mapHeight);
+  player.moveTo(positionX, positionY, 0);
+}
+
+/**
+ * Calculate an integer middle of a length
+ * @param {number} length - The length
+ */
+function getMiddlePosition(length){
+  let middle = length/2;
+  if(middle !== Math.floor(middle)){
+    middle = Math.floor(middle)
+  }
+  return middle;
 }
 
 /**
@@ -35,11 +73,12 @@ function updatePlayerScore(score) {
 
 /**
  * Move the player
- * @param {string} direction - The direction of movement
+ * @param {number} direction - The direction of movement
  * @returns {boolean} - Whether the player can move or not
  */
 function movePlayer(direction) {
   if (player.isEnergyPointsZero()) {
+    notifyGameOverListner(player.getScore())
     return false;
   }
   let positionX = player.getPositionX();
@@ -69,9 +108,10 @@ function movePlayer(direction) {
 export {
   movePlayer,
 };
-export { initialize };
+export { initialize,resetGame };
 /**
  * Get the game map
  * @returns {Array} - The game map
  */
 export { getMap, MOVEMENT_DIRECTION } from "./map.js";
+export { player } from "./player.js";

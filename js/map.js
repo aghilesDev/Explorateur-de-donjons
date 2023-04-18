@@ -27,7 +27,7 @@ let TILE_TYPE = {
   let valMaxY = 0;
   
   // This variable stores the game map, which is a 2D array of tiles
-  let gameMap = [[0]];
+  let gameMap = [[]];
   
   // This array stores listeners that are interested in changes to the game tiles
   let tileListener = [];
@@ -154,7 +154,7 @@ function generateMap(maxX, maxY) {
    *
    * @param {number} currentPositionX - The current X position of the player
    * @param {number} currentPositionY - The current Y position of the player
-   * @param {string} direction - The direction in which the player wants to move
+   * @param {number} direction - The direction in which the player wants to move
    * @returns {boolean} Whether the player can move in the given direction
    */
   function canMove(currentPositionX, currentPositionY, direction) {
@@ -178,7 +178,7 @@ function generateMap(maxX, maxY) {
  *
  * @param {number} currentPositionX - The current position x-coordinate.
  * @param {number} currentPositionY - The current position y-coordinate.
- * @param {string} direction - The direction to check for the adjacent tile.
+ * @param {number} direction - The direction to check for the adjacent tile.
  * @returns {object|boolean} - The adjacent tile object or false if no tile is found.
  */
 function getAdjacentTile(currentPositionX, currentPositionY, direction) {
